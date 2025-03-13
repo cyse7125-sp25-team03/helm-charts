@@ -12,7 +12,7 @@
         [
             "@semantic-release/exec",
             {
-                "prepareCmd": "helm package ./api-server"
+                "prepareCmd": "helm package ./api-server -d ./dist"
             }
         ],
         [
@@ -20,9 +20,16 @@
             {
                 "assets": [
                     {
-                        "path": "*.tgz"
+                    "path": "./dist/*.tgz"
                     }
                 ]
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": ["./api-server/Chart.yaml"],
+                "message": "chore(release): update Chart.yaml to version ${nextRelease.version} [skip ci]"
             }
         ]
     ]
