@@ -45,7 +45,7 @@ apiServer:
     name: api-server-sa
   # Connection settings for Postgres
   postgres:
-    host: "pg-postgresql.postgres.svc.cluster.local" # name-postgresql.namespace.svc.cluster.local
+    host: "pg-postgresql.postgres.svc.cluster.local" # name-postgresql.namespace.svc.cluster.local tbc
     port: 5432
     dbName: "api"
     secretName: "postgres-secret"
