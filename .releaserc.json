@@ -1,4 +1,6 @@
 {
+    "branches": ["main"],
+    "repositoryUrl": "https://github.com/cyse7125-sp25-team03/helm-charts.git",
     "plugins": [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
