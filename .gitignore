@@ -2,3 +2,5 @@
 
 requirements.lock
 Chart.lock
+
+node_modules/
