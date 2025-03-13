@@ -1,0 +1,53 @@
+global:
+  imagePullSecret: dockerhub-secret
+
+apiServer:
+  name: api-server
+  enabled: true
+  replicas: 3
+  image:
+    repository: roarceus/api-server
+    tag: latest
+    pullPolicy: Always
+  containerPort: 8080
+  configMap:
+    name: api-server-config
+  service:
+    type: LoadBalancer
+    port: 80
+  resources:
+    requests:
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  probes:
+    liveness:
+      path: /healthz
+      initialDelay: 5
+      period: 10
+    readiness:
+      path: /healthz
+      initialDelay: 5
+      period: 10
+  flyway:
+    image: roarceus/db-trace-processor
+    tag: latest
+    api:
+      name: db-api-migration
+      schema: api
+      dbName: api
+    trace:
+      name: db-trace-migration
+      schema: trace
+      dbName: trace
+      migrationPath: flyway/sql
+  serviceAccount:
+    name: api-server-sa
+  # Connection settings for Postgres
+  postgres:
+    host: "pg-postgresql.postgres.svc.cluster.local" # name-postgresql.namespace.svc.cluster.local
+    port: 5432
+    dbName: "api"
+    secretName: "postgres-secret"
+    username: ""
+    password: ""

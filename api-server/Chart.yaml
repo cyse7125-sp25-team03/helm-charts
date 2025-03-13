@@ -1,0 +1,6 @@
+apiVersion: v2
+name: apiServer
+description: A Helm chart for deploying the API server application
+type: application
+version: 0.1.0
+appVersion: "1.0"
