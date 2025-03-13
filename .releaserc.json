@@ -1,0 +1,29 @@
+{
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        [
+            "semantic-release-helm",
+            {
+                "chartPath": "./api-server",
+                "onlyUpdateVersion": true
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "helm package ./api-server"
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    {
+                        "path": "*.tgz"
+                    }
+                ]
+            }
+        ]
+    ]
+}
