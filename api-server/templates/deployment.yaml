@@ -1,0 +1,128 @@
+{{- if .Values.apiServer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apiServer.name }}
+  labels:
+    {{- include "apiServer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.apiServer.replicas }}
+  selector:
+    matchLabels:
+      {{- include "apiServer.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "apiServer.selector" . | nindent 8 }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+    spec:
+      serviceAccountName: {{ .Values.apiServer.serviceAccount.name }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecret }}
+      initContainers:
+        - name: {{ .Values.apiServer.flyway.api.name }}
+          image: "{{ .Values.apiServer.flyway.image }}:{{ .Values.apiServer.flyway.tag }}"
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.postgres.secretName }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.postgres.secretName }}
+                  key: password
+            - name: DB_NAME
+              value: "{{ .Values.apiServer.flyway.api.dbName }}"
+            - name: DB_SCHEMA
+              value: "{{ .Values.apiServer.flyway.api.schema }}"
+          args: ["migrate"]
+        - name: {{ .Values.apiServer.flyway.trace.name }}
+          image: "{{ .Values.apiServer.flyway.image }}:{{ .Values.apiServer.flyway.tag }}"
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.postgres.secretName }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.postgres.secretName }}
+                  key: password
+            - name: DB_NAME
+              value: "{{ .Values.apiServer.flyway.trace.dbName }}"
+            - name: DB_SCHEMA
+              value: "{{ .Values.apiServer.flyway.trace.schema }}"
+            - name: MIGRATION_PATH
+              value: "{{ .Values.apiServer.flyway.trace.migrationPath }}"
+          args: ["migrate"]
+      containers:
+        - name: {{ .Values.apiServer.name }}
+          image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag }}"
+          imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.postgres.secretName }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.postgres.secretName }}
+                  key: password
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: DB_NAME
+          ports:
+            - containerPort: {{ .Values.apiServer.containerPort }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.apiServer.probes.liveness.path }}
+              port: {{ .Values.apiServer.containerPort }}
+            initialDelaySeconds: {{ .Values.apiServer.probes.liveness.initialDelay }}
+            periodSeconds: {{ .Values.apiServer.probes.liveness.period }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.apiServer.probes.readiness.path }}
+              port: {{ .Values.apiServer.containerPort }}
+            initialDelaySeconds: {{ .Values.apiServer.probes.readiness.initialDelay }}
+            periodSeconds: {{ .Values.apiServer.probes.readiness.period }}
+          resources:
+            {{- toYaml .Values.apiServer.resources | nindent 12 }}
+{{- end }}
