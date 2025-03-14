@@ -1,0 +1,4 @@
+creation_rules:
+  - path_regex: .*enc\.yaml$
+    gcp_kms: projects/csye7125-demo-project/locations/us-east1/keyRings/gke-key-ring12/cryptoKeys/sops-encryption-key
+    encrypted_regex: "^(data|stringData|username|password|gsaEmail)$"
