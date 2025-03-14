@@ -109,6 +109,12 @@ spec:
                 configMapKeyRef:
                   name: {{ .Values.apiServer.configMap.name }}
                   key: DB_NAME
+            - name: GSA_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.serviceAccount.secretName }}
+                  key: gsaEmail
+
           ports:
             - containerPort: {{ .Values.apiServer.containerPort }}
           livenessProbe:
