@@ -41,6 +41,8 @@ apiServer:
       schema: trace
       dbName: trace
       migrationPath: flyway/sql
+  gcs:
+    bucketName: trace-bucket
   serviceAccount:
     name: api-server-sa
     secretName: api-server-secret
