@@ -42,7 +42,7 @@ apiServer:
       dbName: trace
       migrationPath: flyway/sql
   gcs:
-    bucketName: trace-bucket
+    bucketName: neu-trace-survey-bucket
   serviceAccount:
     name: api-server-sa
     secretName: api-server-secret
