@@ -43,6 +43,8 @@ apiServer:
       migrationPath: flyway/sql
   serviceAccount:
     name: api-server-sa
+    secretName: api-server-secret
+    gsaEmail: "" # api-server-gsa@csye7125-dev-project.iam.gserviceaccount.com
   # Connection settings for Postgres
   postgres:
     host: "pg-postgresql.postgres.svc.cluster.local" # name-postgresql.namespace.svc.cluster.local tbc
