@@ -1,0 +1,31 @@
+{{ printf "\n" }}
+DB Backup Operator Successfully Installed!
+{{ printf "--------------------------------\n" }}
+
+{{- if .Values.namespaces.create }}
+Namespaces Created:
+  - {{ .Values.global.namespace.backup }}
+  - {{ .Values.global.namespace.operator }}
+{{- end }}
+
+Next Steps:
+1. Verify operator deployment:
+   kubectl get pods -n {{ .Values.global.namespace.operator }}
+
+2. Check your BackupDatabaseSchema CR:
+   kubectl get backupdatabaseschemas -n {{ .Values.global.namespace.backup }}
+
+3. Monitor backup jobs:
+   kubectl get jobs -n {{ .Values.global.namespace.backup }}
+
+4. View backup logs:
+   kubectl logs -l job-name={{ .Values.backup.name }}-job -n {{ .Values.global.namespace.backup }}
+
+Important Configuration:
+• GCS Bucket: {{ .Values.gcs.bucket }}
+• Database: {{ .Values.database.user }}@{{ .Values.database.host }}:{{ .Values.database.port }}
+• GCP Service Account: {{ .Values.serviceAccount.backup.gcpServiceAccount }}
+
+{{ printf "\n" }}
+To trigger a manual backup:
+kubectl apply -f {{ .Release.Name }}/templates/backup-cr.yaml

@@ -1,0 +1,42 @@
+global:
+  namespace:
+    backup: backup-job-namespace
+    operator: operator-ns
+
+namespaces:
+  create: true
+
+serviceAccount:
+  backup:
+    name: backup-sa
+    gcpServiceAccount: "db-operator-gsa@csye7125-demo-project.iam.gserviceaccount.com"
+  operator:
+    name: db-operator-sa
+
+database:
+  host: "pg-postgresql.postgres.svc.cluster.local"
+  user: ""
+  password: ""
+  name: "api"
+  schema: "api"
+  port: 5432
+  passwordSecret:
+    name: "backup-secret"
+    key: "db-password"
+
+gcs:
+  bucket: "operator-db-backups-bucket"
+
+image:
+  repository: "roarceus/db-backup-operator"
+  tag: "latest"
+  pullPolicy: "Always"
+  pullSecrets:
+    - name: "dockerhub-secret"
+
+rbac:
+  clusterRoleName: "backup-operator-role"
+  clusterRoleBindingName: "backup-controller-clusterrolebinding"
+
+backup:
+  name: "database-backup"

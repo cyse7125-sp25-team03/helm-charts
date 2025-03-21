@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-backup-operator
+  namespace: {{ .Values.global.namespace.operator }}
+  labels:
+    {{- include "dbOperator.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-backup-operator
+  template:
+    metadata:
+      labels:
+        app: db-backup-operator
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.operator.name }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: db-backup-operator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["make install"]

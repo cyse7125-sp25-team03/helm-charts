@@ -1,0 +1,3 @@
+{{ printf "\n" }}
+Trace API Server Successfully Installed!
+{{ printf "--------------------------------\n" }}
