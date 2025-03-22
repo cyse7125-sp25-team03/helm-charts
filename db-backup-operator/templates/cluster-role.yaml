@@ -1,9 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Values.rbac.clusterRoleName }}
-  labels:
-    {{- include "dbOperator.labels" . | nindent 4 }}
+  name: backup-operator-role
 rules:
   - apiGroups: ["batch"]
     resources: ["jobs"]
