@@ -27,7 +27,7 @@ gcs:
 
 image:
   repository: "roarceus/db-backup-operator"
-  tag: "1.1.0"
+  tag: "v1.1.0"
   pullPolicy: "Always"
   pullSecrets:
     - name: "dockerhub-secret"
@@ -46,3 +46,6 @@ resources:
 
 backup:
   name: "database-backup"
+
+networkPolicy:
+  name: "db-backup-operator-network-policy"
