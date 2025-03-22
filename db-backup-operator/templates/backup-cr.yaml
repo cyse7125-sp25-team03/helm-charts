@@ -16,5 +16,5 @@ spec:
   dbPort: {{ .Values.database.port }}
   gcsBucket: {{ .Values.gcs.bucket | quote }}
   kubeServiceAccount: {{ .Values.serviceAccount.backup.name | quote }}
-  gcpServiceAccount: {{ .Values.serviceAccount.backup.gcpServiceAccount | split "@" | first | quote }}
+  gcpServiceAccount: {{ .Values.serviceAccount.backup.gcpServiceAccount | quote }}
   backupJobNamespace: {{ .Values.global.namespace.backup | quote }}
