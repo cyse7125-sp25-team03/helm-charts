@@ -1,0 +1,18 @@
+apiVersion: backup.csyeteam03.xyz/v1
+kind: BackupDatabaseSchema
+metadata:
+  name: database-backup
+  namespace: backup-job-namespace
+spec:
+  dbHost: "pg-postgresql.postgres.svc.cluster.local"
+  dbUser: "team03"
+  dbPasswordSecretName: "backup-secret"
+  dbPasswordSecretNamespace: "backup-job-namespace"
+  dbPasswordSecretKey: "db-password"
+  dbName: "api"
+  dbSchema: "api"
+  dbPort: 5432
+  gcsBucket: "operator-db-backups-bucket"
+  kubeServiceAccount: "backup-sa"
+  gcpServiceAccount: "db-operator-gsa"
+  backupJobNamespace: "backup-job-namespace"
