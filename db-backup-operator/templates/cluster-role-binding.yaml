@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: backup-controller-clusterrolebinding
+  name: {{ .Values.rbac.clusterRoleBindingName }}
 subjects:
   - kind: ServiceAccount
-    name: db-operator-sa
-    namespace: operator-ns
+    name: {{ .Values.serviceAccount.operator.name }}
+    namespace: {{ .Values.global.namespace.operator }}
 roleRef:
   kind: ClusterRole
-  name: backup-operator-role
+  name: {{ .Values.rbac.clusterRoleName }}
   apiGroup: rbac.authorization.k8s.io
