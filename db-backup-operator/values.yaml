@@ -15,21 +15,19 @@ serviceAccount:
 
 database:
   host: "pg-postgresql.postgres.svc.cluster.local"
-  user: ""
   password: ""
   name: "api"
   schema: "api"
   port: 5432
   passwordSecret:
     name: "backup-secret"
-    key: "db-password"
 
 gcs:
   bucket: "operator-db-backups-bucket"
 
 image:
   repository: "roarceus/db-backup-operator"
-  tag: "latest"
+  tag: "1.1.0"
   pullPolicy: "Always"
   pullSecrets:
     - name: "dockerhub-secret"
