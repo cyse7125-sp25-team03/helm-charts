@@ -44,8 +44,7 @@ apiServer:
     bucketName: neu-trace-survey-bucket
   serviceAccount:
     name: api-server-sa
-    secretName: api-server-secret
-    gsaEmail: "" # api-server-gsa@csye7125-dev-project.iam.gserviceaccount.com
+    gsaEmail: "api-server-gsa@csye7125-demo-project.iam.gserviceaccount.com"
   # Connection settings for Postgres
   postgres:
     host: "pg-postgresql.postgres.svc.cluster.local" # name-postgresql.namespace.svc.cluster.local tbc
@@ -54,3 +53,18 @@ apiServer:
     secretName: "postgres-secret"
     username: ""
     password: ""
+
+# External Secrets Operator Config
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: gcp-secret-store
+    projectID: csye7125-demo-project
+    clusterLocation: us-east4
+    clusterName: gke-cluster-demo
+  secrets:
+    - name: postgres-username
+      secretKey: username
+    - name: postgres-password
+      secretKey: password

@@ -10,3 +10,4 @@ data:
   DB_NAME: "{{ .Values.apiServer.postgres.dbName }}"
   DB_URL: "jdbc:postgresql://{{ .Values.apiServer.postgres.host }}:{{ .Values.apiServer.postgres.port }}/{{ .Values.apiServer.postgres.dbName }}"
   BUCKET_NAME: {{ .Values.apiServer.gcs.bucketName | quote }}
+  GSA_EMAIL: {{ .Values.apiServer.serviceAccount.gsaEmail | quote }}

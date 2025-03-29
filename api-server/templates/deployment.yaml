@@ -115,9 +115,9 @@ spec:
                   key: BUCKET_NAME
             - name: GSA_EMAIL
               valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.apiServer.serviceAccount.secretName }}
-                  key: gsaEmail
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: GSA_EMAIL
 
           ports:
             - containerPort: {{ .Values.apiServer.containerPort }}
