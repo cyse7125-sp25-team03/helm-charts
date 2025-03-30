@@ -15,12 +15,12 @@ serviceAccount:
 
 database:
   host: "pg-postgresql.postgres.svc.cluster.local"
-  password: ""
   name: "api"
   schema: "api"
   port: 5432
   passwordSecret:
     name: "backup-secret"
+    password: ""
 
 gcs:
   bucket: "operator-db-backups-bucket"
@@ -49,3 +49,16 @@ backup:
 
 networkPolicy:
   name: "db-backup-operator-network-policy"
+
+# External Secrets Operator Config
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: gcp-secret-store-operator
+    projectID: csye7125-demo-project
+    clusterLocation: us-east4
+    clusterName: gke-cluster-demo
+  secrets:
+    - name: postgres-password
+      secretKey: password
