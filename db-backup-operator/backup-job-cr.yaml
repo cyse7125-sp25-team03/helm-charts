@@ -8,7 +8,7 @@ spec:
   dbUser: "team03"
   dbPasswordSecretName: "backup-secret"
   dbPasswordSecretNamespace: "backup-job-namespace"
-  dbPasswordSecretKey: "db-password"
+  dbPasswordSecretKey: "password"
   dbName: "api"
   dbSchema: "api"
   dbPort: 5432
