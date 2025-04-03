@@ -16,8 +16,10 @@ apiServer:
     port: 8080
   resources:
     requests:
+      cpu: 500m
       memory: 256Mi
     limits:
+      cpu: 1000m
       memory: 512Mi
   probes:
     liveness:
@@ -45,6 +47,18 @@ apiServer:
   serviceAccount:
     name: api-server-sa
     gsaEmail: "api-server-gsa@csye7125-demo-project.iam.gserviceaccount.com"
+  rbac:
+    roleName: api-server-role
+    roleBindingName: api-server-rolebinding
+  hpa:
+    name: api-server-hpa
+    minReplicas: 1
+    maxReplicas: 5
+    cpuUtilization: 50
+    memoryUtilization: 30
+  pdb:
+    name: api-server-pdb
+    minAvailable: 1
   # Connection settings for Postgres
   postgres:
     host: "pg-postgresql.postgres.svc.cluster.local" # name-postgresql.namespace.svc.cluster.local tbc
