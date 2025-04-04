@@ -1,0 +1,12 @@
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: cert-manager-metrics
+  namespace: cert-manager
+spec:
+  selector:
+    matchLabels:
+      app: cert-manager
+  endpoints:
+  - port: http-metrics
+    interval: 30s
