@@ -118,7 +118,16 @@ spec:
                 configMapKeyRef:
                   name: {{ .Values.apiServer.configMap.name }}
                   key: GSA_EMAIL
-
+            - name: KAFKA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.kafka.secretName }}
+                  key: username
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiServer.kafka.secretName }}
+                  key: password
           ports:
             - containerPort: {{ .Values.apiServer.containerPort }}
           livenessProbe:
