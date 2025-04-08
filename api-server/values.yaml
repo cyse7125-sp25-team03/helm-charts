@@ -67,6 +67,10 @@ apiServer:
     secretName: "postgres-secret"
     username: ""
     password: ""
+  kafka:
+    secretName: "kafka-secret"
+    username: ""
+    password: ""
 
 # External Secrets Operator Config
 externalSecrets:
@@ -81,4 +85,8 @@ externalSecrets:
     - name: postgres-username
       secretKey: username
     - name: postgres-password
+      secretKey: password
+    - name: kafka-username
+      secretKey: username
+    - name: kafka-password
       secretKey: password
