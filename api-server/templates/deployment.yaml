@@ -128,6 +128,12 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.apiServer.kafka.secretName }}
                   key: password
+            - name: OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.apiServer.configMap.name }}
+                  key: OTLP_ENDPOINT
+
           ports:
             - containerPort: {{ .Values.apiServer.containerPort }}
           livenessProbe:

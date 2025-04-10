@@ -11,6 +11,8 @@ apiServer:
   containerPort: 8080
   configMap:
     name: api-server-config
+  envVars:
+    OTLP_ENDPOINT: "jaeger-collector.istio-system:4317"
   service:
     type: ClusterIP
     port: 8080
