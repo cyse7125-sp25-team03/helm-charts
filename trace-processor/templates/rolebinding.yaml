@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.traceProcessor.rbac.roleBindingName }}
+  labels:
+    {{- include "traceProcessor.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.traceProcessor.serviceAccount.name }}
+roleRef:
+  kind: Role
+  name: {{ .Values.traceProcessor.rbac.roleName }}
+  apiGroup: rbac.authorization.k8s.io

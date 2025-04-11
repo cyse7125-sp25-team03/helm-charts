@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.traceProcessor.pdb.name }}
+  labels:
+    {{- include "traceProcessor.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.traceProcessor.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "traceProcessor.selector" . | nindent 6 }}
