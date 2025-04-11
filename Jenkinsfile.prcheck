@@ -39,6 +39,14 @@ pipeline {
 
                     sh "helm lint ./api-server"
                     sh "helm template ./api-server"
+                    sh "helm lint ./trace-processor"
+                    sh "helm template ./trace-processor"
+                    sh "helm lint ./trace-consumer"
+                    sh "helm template ./trace-consumer"
+                    sh "helm lint ./db-backup-operator"
+                    sh "helm template ./db-backup-operator"
+                    sh "helm lint ./postgresql"
+                    sh "helm template ./postgresql"
                 }
             }
         }
