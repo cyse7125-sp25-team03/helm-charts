@@ -1,0 +1,73 @@
+global:
+  imagePullSecret: dockerhub-secret
+
+traceProcessor:
+  name: trace-processor
+  replicas: 1
+  image:
+    repository: roarceus/trace-processor
+    tag: latest
+    pullPolicy: Always
+  containerPort: 8081
+  configMap:
+    name: trace-processor-config
+  service:
+    type: ClusterIP
+    port: 8081
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  probes:
+    liveness:
+      path: /healthz/live
+      initialDelay: 5
+      period: 10
+    readiness:
+      path: /healthz/ready
+      initialDelay: 5
+      period: 10
+  gcs:
+    bucketName: neu-trace-survey-bucket
+  serviceAccount:
+    name: trace-processor-sa
+    gsaEmail: "trace-processor-gsa@csye7125-demo-project.iam.gserviceaccount.com"
+  rbac:
+    roleName: trace-processor-role
+    roleBindingName: trace-processor-rolebinding
+  hpa:
+    name: trace-processor-hpa
+    minReplicas: 1
+    maxReplicas: 3
+    cpuUtilization: 80
+    memoryUtilization: 80
+  pdb:
+    name: trace-processor-pdb
+    minAvailable: 1
+  # Connection settings for Kafka
+  kafka:
+    brokers: "kafka-controller-0.kafka-controller-headless.kafka.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.kafka.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.kafka.svc.cluster.local:9092"
+    inputTopic: "trace-survey-uploaded"
+    outputTopic: "trace-survey-processed"
+    consumerGroup: "trace-processor"
+    secretName: "kafka-secret"
+    username: ""
+    password: ""
+
+# External Secrets Operator Config
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: gcp-secret-store-processor
+    projectID: csye7125-demo-project
+    clusterLocation: us-east4
+    clusterName: gke-cluster-demo
+  secrets:
+    - name: kafka-username
+      secretKey: username
+    - name: kafka-password
+      secretKey: password
