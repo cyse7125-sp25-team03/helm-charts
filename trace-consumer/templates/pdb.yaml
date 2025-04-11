@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.traceConsumer.pdb.name }}
+  labels:
+    {{- include "traceConsumer.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.traceConsumer.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "traceConsumer.selector" . | nindent 6 }}

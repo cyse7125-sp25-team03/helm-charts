@@ -1,0 +1,26 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.traceConsumer.hpa.name }}
+  labels:
+    {{- include "traceConsumer.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.traceConsumer.name }}
+  minReplicas: {{ .Values.traceConsumer.hpa.minReplicas }}
+  maxReplicas: {{ .Values.traceConsumer.hpa.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.traceConsumer.hpa.cpuUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.traceConsumer.hpa.memoryUtilization }}

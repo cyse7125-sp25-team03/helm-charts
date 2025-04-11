@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.traceConsumer.name }}
+  labels:
+    {{- include "traceConsumer.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.traceConsumer.service.type }}
+  ports:
+    - port: {{ .Values.traceConsumer.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "traceConsumer.selector" . | nindent 4 }}

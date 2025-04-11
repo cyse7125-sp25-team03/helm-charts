@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.traceConsumer.rbac.roleBindingName }}
+  labels:
+    {{- include "traceConsumer.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.traceConsumer.serviceAccount.name }}
+roleRef:
+  kind: Role
+  name: {{ .Values.traceConsumer.rbac.roleName }}
+  apiGroup: rbac.authorization.k8s.io

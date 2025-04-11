@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.traceConsumer.name }}
+  labels:
+    {{- include "traceConsumer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.traceConsumer.replicas }}
+  selector:
+    matchLabels:
+      {{- include "traceConsumer.selector" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        {{- include "traceConsumer.selector" . | nindent 8 }}
+    spec:
+      {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecret }}
+      {{- end }}
+      serviceAccountName: {{ .Values.traceConsumer.serviceAccount.name }}
+      containers:
+        - name: {{ .Values.traceConsumer.name }}
+          image: "{{ .Values.traceConsumer.image.repository }}:{{ .Values.traceConsumer.image.tag }}"
+          imagePullPolicy: {{ .Values.traceConsumer.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.traceConsumer.containerPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.traceConsumer.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.traceConsumer.probes.liveness.initialDelay }}
+            periodSeconds: {{ .Values.traceConsumer.probes.liveness.period }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.traceConsumer.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.traceConsumer.probes.readiness.initialDelay }}
+            periodSeconds: {{ .Values.traceConsumer.probes.readiness.period }}
+          resources:
+            requests:
+              cpu: {{ .Values.traceConsumer.resources.requests.cpu }}
+              memory: {{ .Values.traceConsumer.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.traceConsumer.resources.limits.cpu }}
+              memory: {{ .Values.traceConsumer.resources.limits.memory }}
+          env:
+            - name: SERVER_PORT
+              value: "{{ .Values.traceConsumer.containerPort }}"
+            # Kafka Configuration
+            - name: KAFKA_BROKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: KAFKA_BROKERS
+            - name: KAFKA_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: KAFKA_TOPIC
+            - name: KAFKA_CONSUMER_GROUP
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: KAFKA_CONSUMER_GROUP
+            - name: KAFKA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceConsumer.kafka.secretName }}
+                  key: username
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceConsumer.kafka.secretName }}
+                  key: password
+            # Database Configuration
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: DB_NAME
+            - name: DB_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: DB_SCHEMA
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceConsumer.postgres.secretName }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceConsumer.postgres.secretName }}
+                  key: password
+            # Processing Configuration
+            - name: MAX_RETRIES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: MAX_RETRIES
+            - name: RETRY_BACKOFF_MS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: RETRY_BACKOFF_MS
+            - name: HEALTH_CHECK_INTERVAL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceConsumer.configMap.name }}
+                  key: HEALTH_CHECK_INTERVAL
+            # Log Level
+            - name: LOG_LEVEL
+              value: "info"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.traceConsumer.configMap.name }}
