@@ -1,0 +1,88 @@
+global:
+  imagePullSecret: dockerhub-secret
+
+traceConsumer:
+  name: trace-consumer
+  replicas: 1
+  image:
+    repository: roarceus/trace-consumer
+    tag: latest
+    pullPolicy: Always
+  containerPort: 8082
+  configMap:
+    name: trace-consumer-config
+  service:
+    type: ClusterIP
+    port: 8082
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  probes:
+    liveness:
+      path: /healthz/live
+      initialDelay: 30
+      period: 15
+    readiness:
+      path: /healthz/ready
+      initialDelay: 10
+      period: 10
+  serviceAccount:
+    name: trace-consumer-sa
+    gsaEmail: "trace-consumer-gsa@csye7125-demo-project.iam.gserviceaccount.com"
+  rbac:
+    roleName: trace-consumer-role
+    roleBindingName: trace-consumer-rolebinding
+  hpa:
+    name: trace-consumer-hpa
+    minReplicas: 1
+    maxReplicas: 3
+    cpuUtilization: 80
+    memoryUtilization: 80
+  pdb:
+    name: trace-consumer-pdb
+    minAvailable: 1
+  # Connection settings for Kafka
+  kafka:
+    brokers: "kafka-controller-0.kafka-controller-headless.kafka.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.kafka.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.kafka.svc.cluster.local:9092"
+    topic: "trace-survey-processed"
+    consumerGroup: "trace-consumer"
+    secretName: "kafka-secret"
+    username: ""
+    password: ""
+  # Connection settings for PostgreSQL
+  postgres:
+    host: "pg-postgresql.postgres.svc.cluster.local"
+    port: "5432"
+    name: "trace"
+    schema: "trace"
+    secretName: "postgres-secret"
+    username: ""
+    password: ""
+  # Processing configuration
+  processing:
+    maxRetries: 3
+    retryBackoffMs: 1000
+    healthCheckInterval: 60
+
+# External Secrets Operator Config
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: gcp-secret-store-consumer
+    projectID: csye7125-demo-project
+    clusterLocation: us-east4
+    clusterName: gke-cluster-demo
+  secrets:
+    - name: kafka-username
+      secretKey: username
+    - name: kafka-password
+      secretKey: password
+    - name: postgres-username
+      secretKey: username
+    - name: postgres-password
+      secretKey: password
