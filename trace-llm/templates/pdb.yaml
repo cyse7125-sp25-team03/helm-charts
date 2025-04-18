@@ -1,0 +1,13 @@
+{{- if .Values.traceLlm.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.traceLlm.pdb.name }}
+  labels:
+    {{- include "traceLlm.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.traceLlm.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "traceLlm.selector" . | nindent 6 }}
+{{- end }}
