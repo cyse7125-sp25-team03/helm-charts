@@ -1,6 +1,6 @@
 # Helm Charts for API Server Deployment
 
-This repository contains Helm charts for deploying the **API Server** along with **Bitnami PostgreSQL** on a Kubernetes cluster. The API Server is part of the **Trace Application** and requires a PostgreSQL database for operation.  
+This repository contains Helm charts for deploying the **API Server**, **Bitnami PostgreSQL**, **TRACE Processor**, **TRACE Consumer**, **Embedding Service** and **TRACE LLM** on a Kubernetes cluster. The API Server is part of the **TRACE Application** and requires a PostgreSQL database for operation.  
 
 ## Repository Structure  
 
