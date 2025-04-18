@@ -1,0 +1,54 @@
+global:
+  imagePullSecret: dockerhub-secret
+
+embeddingService:
+  name: embedding-generator
+  namespace: postgres
+  image:
+    repository: roarceus/embedding-service
+    tag: 0.0.1
+    pullPolicy: Always
+  schedule: "*/10 * * * *"  # Run every 10 minutes
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  command: ["python", "main.py"]
+  configMap:
+    name: embedding-service-config
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  serviceAccount:
+    name: embedding-service-sa
+    gsaEmail: "embedding-service-gsa@csye7125-demo-project.iam.gserviceaccount.com"
+  rbac:
+    roleName: embedding-service-role
+    roleBindingName: embedding-service-rolebinding
+  # Connection settings for PostgreSQL
+  postgres:
+    host: "pg-postgresql.postgres.svc.cluster.local"
+    port: "5432"
+    name: "trace"
+    schema: "trace"
+    secretName: "postgres-secret"
+    username: ""
+    password: ""
+
+# External Secrets Operator Config
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: gcp-secret-store-embedding
+    projectID: csye7125-demo-project
+    clusterLocation: us-east4
+    clusterName: gke-cluster-demo
+  secrets:
+    - name: postgres-username
+      secretKey: username
+    - name: postgres-password
+      secretKey: password
