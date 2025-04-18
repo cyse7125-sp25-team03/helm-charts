@@ -1,0 +1,81 @@
+global:
+  imagePullSecret: dockerhub-secret
+
+traceLlm:
+  name: trace-llm
+  image:
+    repository: roarceus/trace-llm
+    tag: 0.0.1
+    pullPolicy: Always
+  replicas: 1
+  containerPort: 8000
+  configMap:
+    name: trace-llm-config
+  service:
+    name: trace-llm-service
+    type: ClusterIP
+    port: 80
+    targetPort: 8000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  probes:
+    liveness:
+      path: /health
+      initialDelay: 30
+      period: 15
+    readiness:
+      path: /health
+      initialDelay: 10
+      period: 10
+  serviceAccount:
+    name: trace-llm-sa
+    gsaEmail: "trace-llm-gsa@csye7125-demo-project.iam.gserviceaccount.com"
+  rbac:
+    roleName: trace-llm-role
+    roleBindingName: trace-llm-rolebinding
+  hpa:
+    name: trace-llm-hpa
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    cpuUtilization: 80
+    memoryUtilization: 80
+  pdb:
+    name: trace-llm-pdb
+    enabled: true
+    minAvailable: 1
+  # Connection settings for PostgreSQL
+  postgres:
+    host: "pg-postgresql.postgres.svc.cluster.local"
+    port: "5432"
+    name: "trace"
+    schema: "trace"
+    secretName: "postgres-secret"
+    username: ""
+    password: ""
+  # Gemini API settings
+  gemini:
+    secretName: "gemini-api-secret"
+    apiKey: ""
+
+# External Secrets Operator Config
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStore:
+    name: gcp-secret-store-llm
+    projectID: csye7125-demo-project
+    clusterLocation: us-east4
+    clusterName: gke-cluster-demo
+  secrets:
+    - name: postgres-username
+      secretKey: username
+    - name: postgres-password
+      secretKey: password
+    - name: gemini-api-key
+      secretKey: api-key

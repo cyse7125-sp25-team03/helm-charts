@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.embeddingService.name }}
+  namespace: {{ .Values.embeddingService.namespace }}
+  labels:
+    {{- include "embeddingService.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.embeddingService.schedule | quote }}
+  concurrencyPolicy: {{ .Values.embeddingService.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.embeddingService.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.embeddingService.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "embeddingService.selector" . | nindent 12 }}
+        spec:
+          imagePullSecrets:
+            - name: {{ .Values.global.imagePullSecret }}
+          serviceAccountName: {{ .Values.embeddingService.serviceAccount.name }}
+          containers:
+            - name: {{ .Values.embeddingService.name }}
+              image: "{{ .Values.embeddingService.image.repository }}:{{ .Values.embeddingService.image.tag }}"
+              imagePullPolicy: {{ .Values.embeddingService.image.pullPolicy }}
+              command: ["/bin/sh", "-c"]
+              args:
+                - >
+                  cd /app && python3 main.py
+              resources:
+                requests:
+                  cpu: {{ .Values.embeddingService.resources.requests.cpu }}
+                  memory: {{ .Values.embeddingService.resources.requests.memory }}
+                limits:
+                  cpu: {{ .Values.embeddingService.resources.limits.cpu }}
+                  memory: {{ .Values.embeddingService.resources.limits.memory }}
+              env:
+                # Database Configuration
+                - name: DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: {{ .Values.embeddingService.configMap.name }}
+                      key: DB_HOST
+                - name: DB_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: {{ .Values.embeddingService.configMap.name }}
+                      key: DB_PORT
+                - name: DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: {{ .Values.embeddingService.configMap.name }}
+                      key: DB_NAME
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.embeddingService.postgres.secretName }}
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.embeddingService.postgres.secretName }}
+                      key: password
+                # Log Level
+                - name: LOG_LEVEL
+                  value: "info"
+          restartPolicy: OnFailure

@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.traceLlm.name }}
+  labels:
+    {{- include "traceLlm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.traceLlm.replicas }}
+  selector:
+    matchLabels:
+      {{- include "traceLlm.selector" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        {{- include "traceLlm.selector" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecret }}
+      serviceAccountName: {{ .Values.traceLlm.serviceAccount.name }}
+      containers:
+        - name: {{ .Values.traceLlm.name }}
+          image: "{{ .Values.traceLlm.image.repository }}:{{ .Values.traceLlm.image.tag }}"
+          imagePullPolicy: {{ .Values.traceLlm.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.traceLlm.containerPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.traceLlm.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.traceLlm.probes.liveness.initialDelay }}
+            periodSeconds: {{ .Values.traceLlm.probes.liveness.period }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.traceLlm.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.traceLlm.probes.readiness.initialDelay }}
+            periodSeconds: {{ .Values.traceLlm.probes.readiness.period }}
+          resources:
+            requests:
+              cpu: {{ .Values.traceLlm.resources.requests.cpu }}
+              memory: {{ .Values.traceLlm.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.traceLlm.resources.limits.cpu }}
+              memory: {{ .Values.traceLlm.resources.limits.memory }}
+          env:
+            # Database Configuration
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceLlm.configMap.name }}
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceLlm.configMap.name }}
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.traceLlm.configMap.name }}
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceLlm.postgres.secretName }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceLlm.postgres.secretName }}
+                  key: password
+            # Gemini API Configuration
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.traceLlm.gemini.secretName }}
+                  key: api-key
+            # Log Level
+            - name: LOG_LEVEL
+              value: "info"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.traceLlm.configMap.name }}

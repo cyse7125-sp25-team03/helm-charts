@@ -1,0 +1,20 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your trace-llm service has been deployed as a Deployment in the {{ .Release.Namespace }} namespace.
+
+Application details:
+  Name: {{ .Values.traceLlm.name }}
+  Service: {{ .Values.traceLlm.service.name }}
+  Port: {{ .Values.traceLlm.service.port }}
+
+To check the status of the deployment, run:
+  kubectl get deployment -n {{ .Release.Namespace }} {{ .Values.traceLlm.name }}
+
+To view pods, run:
+  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+To view service details, run:
+  kubectl get svc -n {{ .Release.Namespace }} {{ .Values.traceLlm.service.name }}
+
+To access the service from within the cluster, use:
+  {{ .Values.traceLlm.service.name }}.{{ .Release.Namespace }}.svc.cluster.local

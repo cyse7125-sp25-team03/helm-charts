@@ -1,0 +1,19 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your embedding service has been deployed as a CronJob in the {{ .Values.embeddingService.namespace }} namespace.
+
+CronJob details:
+  Name: {{ .Values.embeddingService.name }}
+  Schedule: {{ .Values.embeddingService.schedule }}
+
+To check the status of the CronJob, run:
+  kubectl get cronjobs -n {{ .Values.embeddingService.namespace }} {{ .Values.embeddingService.name }}
+
+To view recent job executions, run:
+  kubectl get jobs -n {{ .Values.embeddingService.namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+To view logs from the most recent job, first find the pod name:
+  kubectl get pods -n {{ .Values.embeddingService.namespace }} -l app.kubernetes.io/instance={{ .Release.Name }} --sort-by=.metadata.creationTimestamp | tail -n 1
+
+Then view the logs:
+  kubectl logs -n {{ .Values.embeddingService.namespace }} POD_NAME

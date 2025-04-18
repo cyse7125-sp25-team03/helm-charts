@@ -1,0 +1,28 @@
+{{- if .Values.traceLlm.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.traceLlm.hpa.name }}
+  labels:
+    {{- include "traceLlm.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.traceLlm.name }}
+  minReplicas: {{ .Values.traceLlm.hpa.minReplicas }}
+  maxReplicas: {{ .Values.traceLlm.hpa.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.traceLlm.hpa.cpuUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.traceLlm.hpa.memoryUtilization }}
+{{- end }}
