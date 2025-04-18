@@ -78,36 +78,6 @@ spec:
             - name: MIGRATION_PATH
               value: "{{ .Values.apiServer.flyway.trace.migrationPath }}"
           args: ["migrate"]
-        - name: {{ .Values.apiServer.flyway.vector.name }}
-          image: "{{ .Values.apiServer.flyway.image }}:{{ .Values.apiServer.flyway.tag }}"
-          env:
-            - name: DB_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.apiServer.configMap.name }}
-                  key: DB_HOST
-            - name: DB_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Values.apiServer.configMap.name }}
-                  key: DB_PORT
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.apiServer.postgres.secretName }}
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.apiServer.postgres.secretName }}
-                  key: password
-            - name: DB_NAME
-              value: "{{ .Values.apiServer.flyway.vector.dbName }}"
-            - name: DB_SCHEMA
-              value: "{{ .Values.apiServer.flyway.vector.schema }}"
-            - name: MIGRATION_PATH
-              value: "{{ .Values.apiServer.flyway.vector.migrationPath }}"
-          args: ["migrate"]
       containers:
         - name: {{ .Values.apiServer.name }}
           image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag }}"

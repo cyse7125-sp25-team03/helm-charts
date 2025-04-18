@@ -44,11 +44,6 @@ apiServer:
       schema: trace
       dbName: trace
       migrationPath: flyway/sql
-    vector:
-      name: db-vector-migration
-      schema: vector
-      dbName: vector
-      migrationPath: flyway/sql
   gcs:
     bucketName: neu-trace-survey-bucket
   serviceAccount:
