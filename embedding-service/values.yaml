@@ -6,7 +6,7 @@ embeddingService:
   namespace: postgres
   image:
     repository: roarceus/embedding-service
-    tag: 0.0.1
+    tag: latest
     pullPolicy: Always
   schedule: "*/10 * * * *"  # Run every 10 minutes
   concurrencyPolicy: Forbid

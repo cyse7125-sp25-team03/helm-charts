@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trace-llm-ingress
+  namespace: trace-llm
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ${HOST}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: trace-llm-service
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - ${HOST}
+    secretName: trace-llm-tls-secret

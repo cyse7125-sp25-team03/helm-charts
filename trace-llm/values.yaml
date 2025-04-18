@@ -5,7 +5,7 @@ traceLlm:
   name: trace-llm
   image:
     repository: roarceus/trace-llm
-    tag: 0.0.1
+    tag: latest
     pullPolicy: Always
   replicas: 1
   containerPort: 8000
