@@ -5,10 +5,17 @@ traceLlm:
   name: trace-llm
   image:
     repository: roarceus/trace-llm
-    tag: latest
+    tag: 0.0.5
     pullPolicy: Always
   replicas: 1
   containerPort: 8000
+  nodeSelector:
+    node-type: high-performance
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "rag"
+      effect: "NoSchedule"
   configMap:
     name: trace-llm-config
   service:
@@ -18,11 +25,11 @@ traceLlm:
     targetPort: 8000
   resources:
     requests:
-      cpu: 500m
-      memory: 512Mi
-    limits:
       cpu: 2
       memory: 1Gi
+    limits:
+      cpu: 4
+      memory: 4Gi
   probes:
     liveness:
       path: /health
