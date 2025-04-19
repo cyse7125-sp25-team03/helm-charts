@@ -16,10 +16,10 @@ traceConsumer:
     port: 8082
   resources:
     requests:
-      cpu: 100m
+      cpu: 150m
       memory: 256Mi
     limits:
-      cpu: 250m
+      cpu: 300m
       memory: 512Mi
   probes:
     liveness:
@@ -47,7 +47,7 @@ traceConsumer:
     minAvailable: 1
   # Connection settings for Kafka
   kafka:
-    brokers: "kafka-controller-0.kafka-controller-headless.kafka.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.kafka.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.kafka.svc.cluster.local:9092"
+    brokers: "kafka-controller-0.kafka-controller-headless.kafka.svc.cluster.local:9092"
     topic: "trace-survey-processed"
     consumerGroup: "trace-consumer"
     secretName: "kafka-secret"
