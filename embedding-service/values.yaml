@@ -8,7 +8,7 @@ embeddingService:
     repository: roarceus/embedding-service
     tag: latest
     pullPolicy: Always
-  schedule: "*/10 * * * *"  # Run every 10 minutes
+  schedule: "*/2 * * * *"  # Run every 2 minutes
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -17,10 +17,10 @@ embeddingService:
     name: embedding-service-config
   resources:
     requests:
-      cpu: 250m
+      cpu: 150m
       memory: 256Mi
     limits:
-      cpu: 500m
+      cpu: 300m
       memory: 512Mi
   serviceAccount:
     name: embedding-service-sa
