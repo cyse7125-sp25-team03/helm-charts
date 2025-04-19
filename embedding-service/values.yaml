@@ -8,7 +8,7 @@ embeddingService:
     repository: roarceus/embedding-service
     tag: latest
     pullPolicy: Always
-  schedule: "*/2 * * * *"  # Run every 2 minutes
+  schedule: "*/10 * * * *"  # Run every 10 minutes
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
