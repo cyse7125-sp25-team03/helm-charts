@@ -19,6 +19,14 @@ spec:
       labels:
         {{- include "traceLlm.selector" . | nindent 8 }}
     spec:
+      {{- with .Values.traceLlm.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.traceLlm.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       imagePullSecrets:
         - name: {{ .Values.global.imagePullSecret }}
       serviceAccountName: {{ .Values.traceLlm.serviceAccount.name }}
